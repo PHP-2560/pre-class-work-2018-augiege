@@ -32,6 +32,7 @@ mean(exp.draws.1)
 sd(exp.draws.1)
 ```
 
+
 2. Repeat, but change the rate to 0.2, 5, 7.3 and 10, storing the results in vectors called  `exp.draws.0.2`,  `exp.draws.5`,  `exp.draws.7.3` and  `exp.draws.10`. 
 
 ```{r, echo = FALSE}
@@ -45,17 +46,20 @@ exp.draws.10 <- rexp(200, rate = 10)
 
 3. The function `plot()` is the generic function in R for the visual display of data. `hist()` is a function that takes in and bins data as a side effect. To use this function, we must first specify what we'd like to plot.
     a. Use the `hist()` function to produce a histogram of your standard exponential distribution. 
+    
 ```{r, echo = FALSE}
 # Draws histogram of standard exponential vector
 hist(exp.draws.1)
 ```
     b. Use `plot()` with this vector to display the random values from your standard distribution in order.
+    
 ```{r, echo = FALSE}
 # Plots all values of the standard exponential vector
 plot(exp.draws.1)    
 ```
 
     c. Now, use `plot()` with two arguments -- any two of your other stored random value vectors -- to create a scatterplot of the two vectors against each other.
+    
 ```{r, echo = FALSE}
 # Plots standard exponential vector on x axis and rate = 5 exponential vector on y axis
 plot(exp.draws.1, exp.draws.5)
@@ -63,6 +67,7 @@ plot(exp.draws.1, exp.draws.5)
 
 4. We'd now like to compare the properties of each of our vectors. Begin by creating a vector of the means of each of our five distributions in the order we created them and saving this to a variable name of your choice. Using this and other similar vectors, create the following scatterplots and explain in words what is going on:
     a. The five means versus the five rates used to generate the distribution.
+    
 ```{r, echo = FALSE}
 # Vector of means of each exponential distribution vector
 exp.means = c(mean(exp.draws.1), mean(exp.draws.0.2), mean(exp.draws.5), mean(exp.draws.7.3), mean(exp.draws.10))
@@ -72,6 +77,7 @@ exp.rates = c(1, .2, 5, 7.3, 10)
 plot(exp.means, exp.rates)
 ```
     b. The standard deviations versus the rates.
+    
 ```{r, echo = FALSE}
 # Vector of standard deviations of each exponential distribution vector
 exp.sds <- c(sd(exp.draws.1), sd(exp.draws.0.2), sd(exp.draws.5), sd(exp.draws.7.3), sd(exp.draws.10))
@@ -79,6 +85,7 @@ exp.sds <- c(sd(exp.draws.1), sd(exp.draws.0.2), sd(exp.draws.5), sd(exp.draws.7
 plot(exp.sds, exp.rates)
 ```
     c. The means versus the standard deviations.
+    
 ```{r, echo = FALSE}
 # Means on x axis, standard deviations on y axis
 plot(exp.means, exp.sds)
@@ -90,10 +97,59 @@ For each plot, explain in words what's going on.
 
 
 5. R's capacity for data and computation is large to what was available 10 years ago. 
-    a. To show this, generate 1.1 million numbers from the standard exponential distribution and store them in a vector called `big.exp.draws.1`. Calculate the mean and standard deviation.
+    a. To show this, generate 1.1 million numbers from the standard exponential distribution and store them in a vector called `big.exp.draws.1`. Calculate the mean and standard deviation. 
+    
+```{r, echo = FALSE}
+# Stores 1.1 million numbers from standard exponential
+big.exp.draws.1 <- rexp(1100000)
+# Mean and standard deviation of 1.1 million exponential vector
+mean(big.exp.draws.1)
+sd(big.exp.draws.1)
+```
     b. Plot a histogram of `big.exp.draws.1`.  Does it match the function \(1-e^{-x}\)?  Should it? 
+    
+```{r, echo = FALSE}
+# Histogram of the 1.1 million exponential vector
+hist(big.exp.draws.1)
+```
+*This does not match the function \(1-e^{-x}\) since the histogram is decreasing while the function is increasing. Furthermore, the big.exp.draws.1 vector draws from the standard exponential distribution, which has pdf \(e^{-x}\).*
+
     c. Find the mean of all of the entries in `big.exp.draws.1` which are strictly greater than 1. You may need to first create a new vector to identify which elements satisfy this.
+    
+```{r, echo = FALSE}
+# Creates a new vector big.exp.draws.2 with elements from big.exp.draws.1 that are greater than 1
+big.exp.draws.2 <- big.exp.draws.1[big.exp.draws.1 > 1]
+# Mean
+mean(big.exp.draws.2)
+
+```
     d. Create a matrix, `big.exp.draws.1.mat`, containing the the values in 
 `big.exp.draws.1`, with 1100 rows and 1000 columns. Use this matrix as the input to the `hist()` function and save the result to a variable of your choice. What happens to your data?
+
+```{r, echo = FALSE}
+# Turns big.exp.draws.1 into a matrix with 1100 rows and 1000 columns
+big.exp.draws.1.mat <- matrix(big.exp.draws.1, nrow = 1100, ncol = 1000)
+# Histogram of the new matrix
+hist(big.exp.draws.1.mat)
+big.exp.draws.1.hist <- hist(big.exp.draws.1.mat)
+```
+
+*Changing the vector into a matrix does not change the shape of the histogram. However, storing the histogram into a variable and running the variable gives a summary of the histogram.*
+
     e. Calculate the mean of the 371st column of `big.exp.draws.1.mat`.
+    
+```{r, echo = FALSE}
+#Mean of 371st column of big.exp.draws.1.mat
+mean(big.exp.draws.1.mat[,317])
+
+```
+
     f. Now, find the means of all 1000 columns of `big.exp.draws.1.mat` simultaneously. Plot the histogram of column means.  Explain why its shape does not match the histogram in problem 5b).
+    
+```{r, echo = FALSE}
+# Use apply to find means of columns of big.exp.draws.1.mat
+columnMeans <-  apply(big.exp.draws.1.mat, 2, mean)
+# Plot histogram
+hist(columnMeans)
+```
+*The shape does not match the shape of the histogram in 5b because 5b is drawing from an exponential distribution, while this histogram is drawing from means of random samples of exponential distributions.*
