@@ -6,6 +6,6 @@ This folder will be where you complete your pre-class each week. The first time 
 Before you continue, Edit this document with:
 
 
-- Preferred Name: _________________________________
-- Brown Name: ___________________________
-- Brown E-mail: ______________________
+- Preferred Name: ___________________Augie Ge______________
+- Brown Name: _________________Augustus Ge__________
+- Brown E-mail: _________augustus_ge@brown.edu_____________
