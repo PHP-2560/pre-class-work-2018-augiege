@@ -77,7 +77,38 @@ gapminder %>% filter(lifeExp >= 80) %>% select(country, lifeExp, year)
 gapminder %>% group_by(country) %>% summarize(correlation = cor(lifeExp, gdpPercap)) %>% arrange(desc(correlation))
 ```
 
+*The 10 countries with the strongest correlation between life expectancy and per capita GDP are France, Austria, Belgium, Norway, Oman, UK, Italy, Israel, Denmart, and Australia.*
+
+
 7. Which combinations of continent (besides Asia) and year have the highest average population across all countries? _N.b. your output should include all results sorted by highest average population_. With what you already know, this one may stump you. See [this Q&A](http://stackoverflow.com/q/27207963/654296) for how to `ungroup` before `arrange`ing. This also [behaves differently in more recent versions of dplyr](https://github.com/hadley/dplyr/releases/tag/v0.5.0).
+
+```{r}
+# Group by continent and year, take Asia out, arrange in descending mean population
+gapminder %>% group_by(continent, year) %>% filter(continent != "Asia") %>% summarize(mean_pop = mean(pop)) %>% arrange(desc(mean_pop))
+```
+
 8. Which three countries have had the most consistent population estimates (i.e. lowest standard deviation) across the years of available data? 
+
+```{r}
+# Group by country, then arrange by population standard deviation
+gapminder %>% group_by(country) %>% summarize(sd = sd(pop)) %>% arrange(sd)
+```
+
+*The three countries with the most consistent population estimates across the years of available data are Sao Tome and Principe, Iceland, and Montenegro.*
+
 9. Subset **gm** to only include observations from 1992 and store the results as **gm1992**. What kind of object is this?
+
+```{r}
+gm1992 <- filter(gapminder, year == 1992)
+class(gm1992)
+gm1992
+```
+
+*class(gm1992) gives that the class of gm1992 is "tbl_df", "tbl", and "data.frame". If we print gm1992 to the console, it says that it is a tibble.*
+
 10. Which observations indicate that the population of a country has *decreased* from the previous year **and** the life expectancy has *increased* from the previous year? See [the vignette on window functions](https://cran.r-project.org/web/packages/dplyr/vignettes/window-functions.html).
+
+```{r}
+# Use lag function to compare previous year values
+gapminder %>% group_by(country) %>% arrange(year) %>% filter(pop < lag(pop) & lifeExp > lag(lifeExp))
+```
