@@ -89,22 +89,103 @@ arcus   Arcus senilis
 
 bmi     Body Mass Index
 -----------------------------------------------------------
+```{r}
+# Call dplyr
+#install.packages("dplyr")
+library(dplyr)
 
+```
 
 
 
 ### Question 1: Standardize Function
 
 A. Create a function called standardize.me() that takes a numeric vector as an argument, and returns the standardized version of the vector. 
+
+
+```{r}
+
+# Create standardize function by subtracting mean and dividing by sd
+standardize.me <- function(x) {
+  result <- ((x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE))
+  return(result)
+}
+
+# See that the function does as intended
+x <- c(1:5)
+standardize.me(x)
+```
+
 B. Assign all the numeric columns of the original WCGS dataset to a new dataset called WCGS.new.
+
+```{r}
+
+
+# Use select_if to extract numeric columns
+WCGS.new <- select_if(wcgs, is.numeric)
+
+
+head(WCGS.new)
+
+```
+
 C. Using a loop and your new function, standardize all the variables WCGS.new dataset.
+
+
+```{r}
+
+# Replace values with standardized values column-wise
+for(i in 1:ncol(WCGS.new)){
+  WCGS.new[,i] = standardize.me(WCGS.new[,i])
+}
+
+head(WCGS.new)
+```
+
+
 D. What should the mean and standard deviation of all your new standardized variables be? Test your prediction by running a loop
 
+```{r}
+
+# I would have predicted the means to be 0 and standard deviations to be 1
+
+# Find mean and standard deviation column-wise
+for(i in 1:ncol(WCGS.new)) {
+  print(mean(WCGS.new[,i], na.rm = TRUE))
+  print(sd(WCGS.new[,i], na.rm = TRUE))
+}
+```
 
 
 
 ### Question 2: Looping to Calculate
 
 A. Using a loop, calculate the mean weight of the subjects separated by the type of CHD they have.
+
+```{r}
+
+# Create a vector of the unique types of CHD and put them into a data frame with initial means 0
+chd_types <- as.vector(unlist(unique(wcgs["typchd69"])))
+means <- c(0,0,0,0)
+chd_means_df <- data.frame(chd_types, means)
+
+# Use a for loop and subsetting to find the mean for each type of CHD and complete the data frame
+for(i in 1:length(chd_types)) {
+  chd_means_df[i,2] <- mean(wcgs[which(wcgs$typchd69 == chd_types[i]), "weight"], na.rm = TRUE)
+}
+
+# Show the results
+chd_means_df
+
+```
+
 B. Now do the same thing, but now don’t use a loop
+
+```{r}
+
+# Much easier and more intuitive than part A to arrive at the same result
+wcgs %>% group_by(typchd69) %>% summarize(mean_weight = mean(weight, na.rm = TRUE))
+
+```
+
 
