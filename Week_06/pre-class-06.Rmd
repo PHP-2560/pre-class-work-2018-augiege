@@ -12,24 +12,58 @@ knitr::opts_chunk$set(echo = TRUE)
 
 1. Read the source code for each of the following three functions, puzzle out what they do, and then brainstorm better names.
 
-```
-f1 <- function(string, prefix) {
+```{r}
+
+# A better name would be compare_prefix
+# The function returns FALSE if the prefix argument is not the prefix of the string argument and TRUE otherwise
+compare_prefix <- function(string, prefix) {
   substr(string, 1, nchar(prefix)) == prefix
 }
-f2 <- function(x) {
+
+# A better name would be remove_last
+# The function takes away the last element of a vector
+remove_last <- function(x) {
   if (length(x) <= 1) return(NULL)
   x[-length(x)]
 }
-f3 <- function(x, y) {
+
+# A better name would be recycle_vec
+# The function recycles the y vector for the length of the x vector
+recycle_vec <- function(x, y) {
   rep(y, length.out = length(x))
 }
+
 ```
 
 2. Compare and contrast rnorm() and MASS::mvrnorm(). How could you make them more consistent?
 
+*The functions rnorm() and mvrnorm() are similar in that they sample any specified amount of values from the normal distribution with a chosen mean and spread. The biggest difference is that rnorm() is limited to a single variable while mvrnorm() can consider multiple variables. Another difference comes in how the user inputs the spread. rnorm() takes the standard deviation, while mvrnorm() takes the covariance. I would make them consistent by making the spread in rnorm() be the variance rather than the standard deviation.*
+
 
 3. Use `lapply()` and an anonymous function to find the coefficient of variation (the standard deviation divided by the mean) for all columns in the mtcars dataset. 
 
+```{r}
+
+# Used lapply to apply an anonymous function for all columns in mtcars
+lapply(mtcars, function(x) sd(x)/mean(x))
+
+```
+
 4. Use vapply() to:
     a. Compute the standard deviation of every column in a numeric data frame.
+    
+```{r}
+
+# Used vapply to apply sd to columns in the mtcars numeric data frame
+vapply(mtcars, sd, numeric(1))
+
+```
+
     b. Compute the standard deviation of every numeric column in a mixed data frame. (Hint: you’ll need to use vapply() twice.)
+
+```{r}
+
+# Used vapply to subset numeric columns and piped into the sd function
+flights[vapply(flights, is.numeric, logical(1))] %>% vapply(sd, numeric(1))
+
+```
