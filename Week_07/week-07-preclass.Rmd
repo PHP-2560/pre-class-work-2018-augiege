@@ -112,7 +112,6 @@ mean_bust_time
 # Modified the gambler's ruin to stop after busting (going to 0)
 # Also, this function returns the final amount of money rather rather than
 # the whole random walk
-set.seed(1)
 gamblers_ruin_stop_after_bust <- function(n, winprob=.5, start = 1000, bet = 100){
   output <- rep(NA, n)
   output[1] <- start
