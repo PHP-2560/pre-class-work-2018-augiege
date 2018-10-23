@@ -110,6 +110,9 @@ mean_bust_time
     
 ```{r}
 # Modified the gambler's ruin to stop after busting (going to 0)
+# Also, this function returns the final amount of money rather rather than
+# the whole random walk
+set.seed(1)
 gamblers_ruin_stop_after_bust <- function(n, winprob=.5, start = 1000, bet = 100){
   output <- rep(NA, n)
   output[1] <- start
@@ -117,12 +120,11 @@ gamblers_ruin_stop_after_bust <- function(n, winprob=.5, start = 1000, bet = 100
     output[i] <- output[i-1] + 2*bet*rbinom(1, 1, winprob) - bet
     if(output[i] == 0) break
   }
-  return(output)
+  return(output[i])
 }
 
 # Simulate 100 hands and find mean, variance
-hundred_hands <- gamblers_ruin_stop_after_bust(100)
-hundred_hands
+hundred_hands <- replicate(5000, gamblers_ruin_stop_after_bust(100))
 mean(hundred_hands, na.rm = TRUE)
 var(hundred_hands, na.rm = TRUE)
 
@@ -132,6 +134,8 @@ var(hundred_hands, na.rm = TRUE)
     
 ```{r}
 # Modified the gambler's ruin to stop after busting (going to 0)
+# Also, this function returns the final amount of money rather rather than
+# the whole random walk
 gamblers_ruin_stop_after_bust <- function(n, winprob=.5, start = 1000, bet = 100){
   output <- rep(NA, n)
   output[1] <- start
@@ -139,12 +143,11 @@ gamblers_ruin_stop_after_bust <- function(n, winprob=.5, start = 1000, bet = 100
     output[i] <- output[i-1] + 2*bet*rbinom(1, 1, winprob) - bet
     if(output[i] == 0) break
   }
-  return(output)
+  return(output[i])
 }
 
 # Simulate 500 hands and find mean, variance
-fiveHundred_hands <- gamblers_ruin_stop_after_bust(500)
-fiveHundred_hands
+fiveHundred_hands <- replicate(5000, gamblers_ruin_stop_after_bust(500))
 mean(fiveHundred_hands, na.rm = TRUE)
 var(fiveHundred_hands, na.rm = TRUE)
 
