@@ -157,5 +157,44 @@ Note: you *must* stop playing if your player has gone bust. How will you handle 
 
 2. **Markov Chains**. Suppose you have a game where the probability of winning on your first hand is 48%; each time you win, that probability goes up by one percentage point for the next game (to a maximum of 100%, where it must stay), and each time you lose, it goes back down to 48%. Assume you cannot go bust and that the size of your wager is a constant $100.
     a. Is this a fair game? Simulate one hundred thousand sequential hands to determine the size of your return. Then repeat this simulation 99 more times to get a range of values to calculate the expectation.
+    
+```{r}
+
+# This function simulates the described situation, adding a percent of
+# success with every success and going back down to .48 with every failure
+game_chain <- function(n, start = 1000, bet = 100, winprob = .48, prob_inc = .01){
+  output <- rep(NA, n)
+  output[1] <- start
+  # Have our win probability in our function environment
+  winprob1 = winprob
+  for(i in 2:n){
+    output[i] <- output[i-1] + 2*bet*rbinom(1, 1, winprob1) - bet
+    # Add one percent for every win
+    if(output[i] > output[i-1] && winprob1 < 1){
+      winprob1 <- winprob1 + prob_inc
+      #print(winprob1)
+    } 
+    # If we already have 100% chance of winning, we automatically fill out the rest of the simulation with wins and return the final amount of money
+    else if(winprob1 == 1){
+      #print(winprob1)
+      for(j in (i+1):n){
+        output[j] <- output[j-1] + bet
+      }
+      return(output[n])
+      break
+    }
+    # For every loss, we set the win probability back to the original 
+    else {
+      winprob1 <- winprob
+      #print(winprob1)
+    }
+  }  
+  # Return the final amount of money
+  return(output[n])
+}
+
+expected_value <- sum(replicate(100, game_chain(n=100000)))/100
+expected_value
+```
     b. Repeat this process but change the starting probability to a new value within 2% either way. Get the expected return after 100 repetitions. Keep exploring until you have a return value that is as fair as you can make it. Can you do this automatically?
     c. Repeat again, keeping the initial probability at 48%, but this time change the probability increment to a value different from 1%. Get the expected return after 100 repetitions. Keep changing this value until you have a return value that is as fair as you can make it. 
