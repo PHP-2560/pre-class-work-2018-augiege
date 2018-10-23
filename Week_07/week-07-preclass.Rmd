@@ -222,13 +222,12 @@ expected_value1
     c. Repeat again, keeping the initial probability at 48%, but this time change the probability increment to a value different from 1%. Get the expected return after 100 repetitions. Keep changing this value until you have a return value that is as fair as you can make it. 
     
 ```{r}
-# Within 3 decimal places, a probability increment of 1.3% seems to be the fairest for the player
+# Within 3 decimal places, a probability increment of 1.2% seems to be the # fairest game
+expected_value <- mean(replicate(100, game_chain(n=100000, prob_inc=.012)))
+expected_value
+
+# This runs the game with a probability increment of 1.3%
 expected_value <- mean(replicate(100, game_chain(n=100000, prob_inc=.013)))
 expected_value
 
-# This runs the game with a probability increment of 1.2%
-# This is closer to 0 than 1.3% increment, however it is negative meaning
-# the player is expected to lose money in the long run
-expected_value <- mean(replicate(100, game_chain(n=100000, prob_inc=.012)))
-expected_value
 ```
