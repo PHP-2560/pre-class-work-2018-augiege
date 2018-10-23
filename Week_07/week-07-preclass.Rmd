@@ -101,6 +101,7 @@ gamblers_ruin_bust_hand <- function(n, winprob = .5, start = 1000, bet = 100){
   
 }
 
+# Calcluate the mean bust time
 mean_bust_time <- sum(replicate(50, gamblers_ruin_bust_hand(5000)), na.rm = TRUE) / 50
 mean_bust_time
 ```
