@@ -30,11 +30,125 @@ options(scipen = 3, digits = 3)
 With this project we will simulate a famoues probability problem. This will not require knowledge of probability or statistics but only the logic to follow the steps in order to simulate this problem. This is one way to solve problems by using the computer. 
 
  1. **Gambler's Ruin**: Suppose you have a bankroll of $1000 and make bets of $100 on a fair game. By simulating the outcome directly for at most 5000 iterations of the game (or hands), estimate:
+
+```{r}
+
+# This is a random walk of the gambler's ruin situation, using code shown 
+# in the Markov Chains video of Statistical Programming in R Chapter 5
+gamblers_ruin <- function(n, winprob=.5, start = 1000, bet = 100){
+  output <- rep(NA, n)
+  output[1] <- start
+  for(i in 2:n){
+    output[i] <- output[i-1] + 2*bet*rbinom(1, 1, winprob) - bet
+  }
+  return(output)
+}
+
+```
+
     a. the probability that you have "busted" (lost all your money) by the time you have placed your one hundredth bet. 
+
+```{r}
+
+# Modified gambler's ruin to return 1 if gambler has not busted and 0 if 
+# gambler has busted by the nth hand
+gamblers_ruin_bust <- function(n, winprob = .5, start = 1000, bet = 100){
+  output <- rep(NA, n)
+  output[1] <- start
+  for(i in 2:n){
+    output[i] <- output[i-1] + 2*bet*rbinom(1, 1, winprob) - bet
+    if(output[i] == 0) break
+  }
+  if(output[i] == 0) return(0)
+  else return(1)
+  
+}
+
+
+# Replicate gives a vector of 0s and 1s of busts and non busts
+# Simulate 5000 times and use it to approximate the probability of busting within 100 hands
+prob_bust_100hands <- 1 - sum(replicate(5000, gamblers_ruin_bust(100)))/5000
+prob_bust_100hands
+```
+
     b. the probability that you have busted by the time you have placed your five hundredth bet by simulating the outcome directly. 
+
+```{r}
+
+# Use same function to simulate 5000 runs of 500 hands and use the result 
+# to approximate the probability of busting within 500 hands
+prob_bust_500hands <- 1 - sum(replicate(5000, gamblers_ruin_bust(500)))/5000
+prob_bust_500hands
+
+```
+
+
     c. the mean time you go bust, given that you go bust within the first 5000 hands.
+    
+```{r}
+
+# Return which number hand the gambler busted and NA if the gambler has 
+# not busted within 5000 hands
+gamblers_ruin_bust_hand <- function(n, winprob = .5, start = 1000, bet = 100){
+  output <- rep(NA, n)
+  output[1] <- start
+  for(i in 2:n){
+    output[i] <- output[i-1] + 2*bet*rbinom(1, 1, winprob) - bet
+    if(output[i] == 0) break
+  }
+  if(output[i] == 0) return(i)
+  else return(NA)
+  
+}
+
+mean_bust_time <- sum(replicate(50, gamblers_ruin_bust_hand(5000)), na.rm = TRUE) / 50
+mean_bust_time
+```
+
     d. the mean and variance of your bankroll after 100 hands (including busts).
+    
+```{r}
+# Modified the gambler's ruin to stop after busting (going to 0)
+gamblers_ruin_stop_after_bust <- function(n, winprob=.5, start = 1000, bet = 100){
+  output <- rep(NA, n)
+  output[1] <- start
+  for(i in 2:n){
+    output[i] <- output[i-1] + 2*bet*rbinom(1, 1, winprob) - bet
+    if(output[i] == 0) break
+  }
+  return(output)
+}
+
+# Simulate 100 hands and find mean, variance
+hundred_hands <- gamblers_ruin_stop_after_bust(100)
+hundred_hands
+mean(hundred_hands, na.rm = TRUE)
+var(hundred_hands, na.rm = TRUE)
+
+```
+
     e. the mean and variance of your bankroll after 500 hands (including busts).
+    
+```{r}
+# Modified the gambler's ruin to stop after busting (going to 0)
+gamblers_ruin_stop_after_bust <- function(n, winprob=.5, start = 1000, bet = 100){
+  output <- rep(NA, n)
+  output[1] <- start
+  for(i in 2:n){
+    output[i] <- output[i-1] + 2*bet*rbinom(1, 1, winprob) - bet
+    if(output[i] == 0) break
+  }
+  return(output)
+}
+
+# Simulate 500 hands and find mean, variance
+fiveHundred_hands <- gamblers_ruin_stop_after_bust(500)
+fiveHundred_hands
+mean(fiveHundred_hands, na.rm = TRUE)
+var(fiveHundred_hands, na.rm = TRUE)
+
+
+```
  
 Note: you *must* stop playing if your player has gone bust. How will you handle this in the `for` loop?
 
