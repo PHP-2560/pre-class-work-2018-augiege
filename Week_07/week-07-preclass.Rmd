@@ -67,7 +67,7 @@ gamblers_ruin_bust <- function(n, winprob = .5, start = 1000, bet = 100){
 
 # Replicate gives a vector of 0s and 1s of busts and non busts
 # Simulate 5000 times and use it to approximate the probability of busting within 100 hands
-prob_bust_100hands <- 1 - sum(replicate(5000, gamblers_ruin_bust(100)))/5000
+prob_bust_100hands <- 1 - mean(replicate(5000, gamblers_ruin_bust(100)))
 prob_bust_100hands
 ```
 
@@ -77,7 +77,7 @@ prob_bust_100hands
 
 # Use same function to simulate 5000 runs of 500 hands and use the result 
 # to approximate the probability of busting within 500 hands
-prob_bust_500hands <- 1 - sum(replicate(5000, gamblers_ruin_bust(500)))/5000
+prob_bust_500hands <- 1 - mean(replicate(5000, gamblers_ruin_bust(500)))
 prob_bust_500hands
 
 ```
@@ -102,7 +102,7 @@ gamblers_ruin_bust_hand <- function(n, winprob = .5, start = 1000, bet = 100){
 }
 
 # Calcluate the mean bust time
-mean_bust_time <- sum(replicate(50, gamblers_ruin_bust_hand(5000)), na.rm = TRUE) / 50
+mean_bust_time <- mean(replicate(50, gamblers_ruin_bust_hand(5000)), na.rm = TRUE)
 mean_bust_time
 ```
 
@@ -112,6 +112,7 @@ mean_bust_time
 # Modified the gambler's ruin to stop after busting (going to 0)
 # Also, this function returns the final amount of money rather rather than
 # the whole random walk
+set.seed(1)
 gamblers_ruin_stop_after_bust <- function(n, winprob=.5, start = 1000, bet = 100){
   output <- rep(NA, n)
   output[1] <- start
@@ -162,7 +163,8 @@ Note: you *must* stop playing if your player has gone bust. How will you handle 
 
 # This function simulates the described situation, adding a percent of
 # success with every success and going back down to .48 with every failure
-game_chain <- function(n, start = 1000, bet = 100, winprob = .48, prob_inc = .01){
+# We start at 0$ as we are assuming we cannot go bust
+game_chain <- function(n, start = 0, bet = 100, winprob = .48, prob_inc = .01){
   output <- rep(NA, n)
   output[1] <- start
   # Have our win probability in our function environment
@@ -173,16 +175,23 @@ game_chain <- function(n, start = 1000, bet = 100, winprob = .48, prob_inc = .01
     if(output[i] > output[i-1] && winprob1 < 1){
       winprob1 <- winprob1 + prob_inc
       #print(winprob1)
+      if(winprob1 >= 1){
+        for(j in (i+1):n){
+        output[j] <- output[j-1] + bet
+        }
+        return(output[n])
+        break
+      }
     } 
     # If we already have 100% chance of winning, we automatically fill out the rest of the simulation with wins and return the final amount of money
-    else if(winprob1 == 1){
-      #print(winprob1)
-      for(j in (i+1):n){
-        output[j] <- output[j-1] + bet
-      }
-      return(output[n])
-      break
-    }
+    # else if(winprob1 >= 1){
+    #   #print(winprob1)
+    #   for(j in (i+1):n){
+    #     output[j] <- output[j-1] + bet
+    #   }
+    #   return(output[n])
+    #   break
+    # }
     # For every loss, we set the win probability back to the original 
     else {
       winprob1 <- winprob
@@ -193,8 +202,33 @@ game_chain <- function(n, start = 1000, bet = 100, winprob = .48, prob_inc = .01
   return(output[n])
 }
 
-expected_value <- sum(replicate(100, game_chain(n=100000)))/100
+# Calculate expected value
+expected_value <- mean(replicate(10, game_chain(n=100000)))
 expected_value
 ```
     b. Repeat this process but change the starting probability to a new value within 2% either way. Get the expected return after 100 repetitions. Keep exploring until you have a return value that is as fair as you can make it. Can you do this automatically?
+    
+```{r}
+# It looks like 49% is the fairest the game will be within 3 decimal places
+expected_value <- mean(replicate(100, game_chain(n=100000, winprob = .49)))
+expected_value
+
+# This runs the game with starting probability at 48.9%
+expected_value1 <- mean(replicate(100, game_chain(n=100000, winprob = .489)))
+expected_value1
+
+```
+
     c. Repeat again, keeping the initial probability at 48%, but this time change the probability increment to a value different from 1%. Get the expected return after 100 repetitions. Keep changing this value until you have a return value that is as fair as you can make it. 
+    
+```{r}
+# Within 3 decimal places, a probability increment of 1.3% seems to be the fairest for the player
+expected_value <- mean(replicate(100, game_chain(n=100000, prob_inc=.013)))
+expected_value
+
+# This runs the game with a probability increment of 1.2%
+# This is closer to 0 than 1.3% increment, however it is negative meaning
+# the player is expected to lose money in the long run
+expected_value <- mean(replicate(100, game_chain(n=100000, prob_inc=.012)))
+expected_value
+```
