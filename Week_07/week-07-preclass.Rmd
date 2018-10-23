@@ -175,6 +175,7 @@ game_chain <- function(n, start = 0, bet = 100, winprob = .48, prob_inc = .01){
     if(output[i] > output[i-1] && winprob1 < 1){
       winprob1 <- winprob1 + prob_inc
       #print(winprob1)
+      # Consider if the win prob becomes 1 or greater than 1, then automatically finish the loop
       if(winprob1 >= 1){
         for(j in (i+1):n){
         output[j] <- output[j-1] + bet
@@ -183,16 +184,6 @@ game_chain <- function(n, start = 0, bet = 100, winprob = .48, prob_inc = .01){
         break
       }
     } 
-    # If we already have 100% chance of winning, we automatically fill out the rest of the simulation with wins and return the final amount of money
-    # else if(winprob1 >= 1){
-    #   #print(winprob1)
-    #   for(j in (i+1):n){
-    #     output[j] <- output[j-1] + bet
-    #   }
-    #   return(output[n])
-    #   break
-    # }
-    # For every loss, we set the win probability back to the original 
     else {
       winprob1 <- winprob
       #print(winprob1)
